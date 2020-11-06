@@ -1,0 +1,36 @@
+{
+  "name": "orange-cloud-checker",
+  "version": "1.0.0",
+  "description": "Bulk orange-cloud checker for hostnames",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@bitbucket.cfdata.org:7999/trust/orange-cloud-checker.git"
+  },
+  "keywords": [
+    "orange-cloud",
+    "cloudflare",
+    "proxy",
+    "status",
+    "checker",
+    "1dot1dot1dot1"
+  ],
+  "author": "Hasan Sanli <hasan@cloudflare.com>",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^2.1.2"
+  },
+  "dependencies": {
+    "@peculiar/webcrypto": "^1.1.3",
+    "axios": "^0.21.0",
+    "cidr-matcher": "^2.1.1",
+    "cli-progress": "^3.8.2",
+    "colors": "^1.4.0",
+    "open": "^7.3.0"
+  }
+}
