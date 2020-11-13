@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFile } from 'fs/promises'
 import axios from 'axios'
 import CIDRMatcher from 'cidr-matcher'
@@ -7,6 +9,7 @@ import open from 'open'
 import { argv } from 'process'
 import config from './config.js'
 import random from './utils/get-random.js'
+import { Console } from 'console'
 
 let input = argv[2]
 if (!input) {
@@ -16,7 +19,7 @@ if (!input) {
 
 // create new progress bar
 const b1 = new cliProgress.SingleBar({
-  format: '' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} hostnames || Found: {found}',
+  format: '' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} hostnames || Found: {found} || Errors: {errors}',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
   hideCursor: true,
@@ -24,6 +27,7 @@ const b1 = new cliProgress.SingleBar({
   clearOnComplete: false
 })
 
+let errors = []
 let all = 0
 let processed = 0
 let orangeClouded = []
@@ -40,7 +44,7 @@ let results = {
 const init = async () => {
   let hostnames = await parseHostnames(input)
   all = hostnames.length
-  b1.start(hostnames.length, 0, { found: '0' })
+  b1.start(hostnames.length, 0, { found: '0', errors: '0' })
   matcher = await getMatcher('https://www.cloudflare.com/ips-v4')
   let interval = Math.floor(1000 / config.qps)
   for (let i in hostnames) {
@@ -54,7 +58,6 @@ const init = async () => {
 const parseHostnames = async (path) => {
   let raw = await readFile(path, 'utf8')
   let hostnames = raw.split('\n').map((x) => x.trim())
-  console.log(hostnames.length)
   return hostnames
 }
 
@@ -93,18 +96,20 @@ const doh = async (item, type = 1) => {
       }
     }
   } catch (err) {
-    console.log(server.name)
-    console.log(err.message)
+    errors.push(item + ': ' + err.message)
+    b1.increment({ errors: errors.length })
+    //console.log(server.name)
     output.message = err.message
     results.exception.push(output)
   }
   b1.increment({ found: orangeClouded.length })
   processed++
   if (processed == all) {
-    console.log('\n')
     let output = orangeClouded.map((x) => x.hostname).join('\n')
-    console.log(output)
-    console.log('\n\nTotal found: ' + orangeClouded.length)
+    //console.log(output)
+    if (errors.length) console.log('\nErrors:\n' + errors.join('\n') + '\n\n')
+    console.log('\nOrange clouded:\n\n' + output + '\n')
+    console.log('Total found: ' + orangeClouded.length)
     // console.log('\n\nGenerating JIRA task template ... ')
     // await open('https://tools.ts.cfdata.org/jira/iwol?count=' + orangeClouded.length)
   }

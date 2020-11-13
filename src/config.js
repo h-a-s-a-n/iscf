@@ -3,7 +3,7 @@ const { Crypto } = pkg
 const crypto = new Crypto()
 
 const config = {
-  qps: 50,
+  qps: 25,
   resolvers: [
     {
       name: 'Cloudflare',
