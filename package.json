@@ -4,7 +4,7 @@
   "description": "Bulk orange-cloud checker for hostnames",
   "main": "src/index.js",
   "bin": {
-    "orange-checker": "./src/index.js"
+    "iscf": "./src/index.js"
   },
   "type": "module",
   "scripts": {
